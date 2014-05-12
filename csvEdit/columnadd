@@ -1,0 +1,40 @@
+#!/bin/bash
+# =================================
+# Author: 	Ving Trung
+# Last Update: 	May 9, 2014
+# Filename: 	columnadd
+# Description:	add a column to the end of the temp file
+# =================================
+# parameters rowcount columncount
+
+
+r=$1
+
+let columnc=$2+1
+
+#while loop through all temp row files to add a NULL entry
+i=0
+while test $i -lt "$1"
+do
+ line=`cat ~/csvEdit/temp/r${i}`
+ char=`echo ${line: -1}`
+ if test $char == ','
+ then
+ line+='NULL'
+ else
+ line+=',NULL'
+ fi
+ echo $line > ~/csvEdit/temp/r${i}
+ let i=$i+1
+done
+
+##Save all temp rows to tempfile
+
+rm ~/csvEdit/temp/tempfile
+i=0
+while test $i -lt "$1"
+do
+ cat ~/csvEdit/temp/r${i} >> ~/csvEdit/temp/tempfile
+ let i=$i+1
+done
+clear; exit

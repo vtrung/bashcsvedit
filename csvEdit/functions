@@ -1,0 +1,61 @@
+## save tempfile to the file passed in
+savefile()
+{
+rnum=0
+rm $1
+## loop through all row files and pass it into tempfile
+while test $rnum -lt $2
+ do
+ cat ~/csvEdit/temp/r${rnum} >> $1
+ let rnum=$rnum+1
+done
+}
+
+
+## Add column to each row file that is specified
+columnadd()
+{
+## param: 1-rowcount
+rnum=0
+## loop through all row files
+while test $rnum -le $1
+ do
+ str=cat ~/csvEdit/temp/r${rnum}
+ last=echo "${str:-1}"
+ echo $last;
+ if test $last == ','
+ then
+   let str=$str + "NULL"
+   echo $str > ~/csvEdit/temp/r${rnum}
+ else
+   let str=$str + ",NULL"
+   echo $str > ~/csvEdit/temp/r${rnum}
+ fi
+ let rnum=$rnum+1
+done
+savefile ~/csvEdit/temp/tempfile $1
+}
+
+##
+getline()
+{
+## param: 1-startingtput row 2-total rows 3-total columns
+rnum=0;
+## loop through all row files
+while test $rnum -lt $2
+do
+ let row=$rnum+$1
+ lnum=1;
+
+  ## loop through columns to cut out value and place in tput cup location
+ while test $lnum -le $3
+  do
+  let num=($lnum-1)*$4
+  tput cup $row $num; cat ~/csvEdit/temp/r${rnum} | cut -d',' -f${lnum}
+  let lnum=$lnum+1
+ done
+ let rnum=$rnum+1
+done
+}
+
+

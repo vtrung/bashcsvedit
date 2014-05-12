@@ -1,0 +1,19 @@
+﻿Ving Trung
+CS18
+
+
+Final Project Proposal
+Spreadsheet
+
+
+My final scripting project will be a spreadsheet modifying program.  It will allow users to load and create csv files along with the ability to manipulate the data in them with the commands in the scripting program.  
+
+
+The current status of the csv file will be displayed on terminal for the user to see their progress.  It will also include some mathematical functions such as finding the sum or average of a row or column.
+
+
+CHANGES:
+Users are able to add and remove rows and columns allowing for dynamic modification of csv file
+
+
+Mathematical functions will not be included in this script

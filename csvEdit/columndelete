@@ -1,0 +1,49 @@
+#!/bin/bash
+# =================================
+# Author: 	Ving Trung
+# Last Update: 	May 9, 2014
+# Filename: 	columndelete
+# Description:	Delete user specified column
+# =================================
+# columnNum totalRows totalColumns
+. ~/csvEdit/functions
+let colc=$1+1
+
+## loop through temp row files
+x=0
+while test $x -lt "$2"
+do
+  i=1
+  #echo "x is $x"
+  
+  ## loop through each cell in row file and putting it into an array
+  while test $i -le "$3"
+  do
+    #echo "i is $i"
+    #cat $file | cut -d',' -f${i}
+    row[${i}]=$(cat ~/csvEdit/temp/r${x} | cut -d',' -f${i})
+    #echo " ${row[${i}]} "
+    let i=$i+1
+  done
+  
+  ## save all array value into new line var with comma, skipping the columnNum passed in
+  line=""
+  j=1
+  while test $j -le "$3"
+  do
+   #echo "j is $j"
+   if test $j -ne "$colc"
+   then
+    #echo "comparing $j to $colc"
+    line+=${row[${j}]}
+    line+=","
+   fi
+    let j=$j+1
+  done
+  #echo "$line"
+  ## save line to row file
+  echo $line > ~/csvEdit/temp/r${x}
+ let x=$x+1
+done
+## save all row to tempfile
+savefile ~/csvEdit/temp/tempfile $2

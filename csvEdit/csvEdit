@@ -1,0 +1,65 @@
+#!/bin/bash
+# =================================
+# Author: 	Ving Trung
+# Last Update: 	May 9, 2014
+# Filename: 	csvEdit
+# Description:	Allows the user to modify csv files dynamically
+# =================================
+
+## set input file to var and check if file exist or it will go to nofile script
+file=$1
+if test -z "$file"
+then
+ ~/csvEdit/nofile
+ clear; exit
+fi
+
+## get column and row counts
+columnc=$(head -1 $file | tr '[;,]' ' ' | wc -w) 
+rowc=$(cut -d',' -f1 $file | wc -w)
+
+## Display options to users
+loop=y
+while test $loop = "y"
+do
+ clear
+ tput cup 1 6; echo "csvEdit"
+ tput cup 2 6; echo "======="
+ tput cup 3 6; echo "E - Edit File"
+ tput cup 4 6; echo "Q - Quit"
+ tput cup 7 6; echo "$file"
+ tput cup 8 6; echo "============="
+ tput cup 9 6; echo "Column Count = $columnc"
+ tput cup 10 6; echo "Row Count = $rowc"
+ tput cup 12 6; echo 
+
+ #remove all temp files
+ rm ~/csvEdit/temp/*
+ 
+ #create tempfile
+ cp $file ~/csvEdit/temp/tempfile
+ 
+ #READ ROWS AND COLUMNS
+ count=0
+ while read line
+ do
+  touch ~/csvEdit/temp/r$count
+  echo "$line" > ~/csvEdit/temp/r$count
+  #Save row
+  let count=$count+1
+ done < $file
+ 
+## display file currently
+ cat $file | tr ',' ' '
+let introw=$rowc+14
+ tput cup $introw 0
+
+## read user options
+ read choice || continue
+   case $choice in
+    [Ee]) ~/csvEdit/editfile $file 0 0; clear; exit ;; ## open editfile script with 0,0 cell location
+    [Qq]) clear; exit ;;
+    *) tput cup 20 0; echo "Invalid Code"; read choice ;;
+   esac
+done
+

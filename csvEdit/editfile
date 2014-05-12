@@ -1,0 +1,130 @@
+#/bin/bash
+# =================================
+# Author: 	Ving Trung
+# Last Update: 	May 2, 2014
+# Filename: 	editfile
+# Description:	Allows the user to modify csv files dynamically
+# =================================
+#parameters 1= file 2=x location 3=ylocation
+
+## set program variables
+file=$1
+temp=~/csvEdit/temp/tempfile
+x=$2
+y=$3
+
+## get functions from functions
+. ~/csvEdit/functions
+
+## get column and row count from tempfile
+edit=~/csvEdit/editfile
+#get total number of rows and columns
+columnc=$(head -1 $temp | tr '[;,]' ' ' | wc -w) 
+rowc=$(cut -d';' -f1 $temp | wc -w)
+
+##set variables for row and column limits
+let rowl=$rowc-1
+let columnl=$columnc-1
+
+## this block set limits to x and y so they do not go outside the bounds
+if test $x -lt 0
+then
+ let x=0
+fi
+if test $x -gt $columnl
+then
+ let x=$columnl
+fi
+
+if test $y -lt 0
+then
+ let y=0
+fi
+if test $y -gt $rowl
+then
+ let y=$rowl
+fi
+
+## convert x and y to tput locations
+width=12;
+let xl=$x*$width
+let yl=$y+7
+
+## test for no file passed through
+if test -z "$file"
+then
+ ./nofile
+ clear; exit
+fi
+
+## display user information
+ clear
+ tput cup 0 10; echo "Edit File"
+ tput cup 1 10; echo "============="
+ tput cup 2 10; echo "$file"
+ tput cup 3 10; echo "============="
+ tput cup 4 10; echo "Column Count = $columnc"
+ tput cup 4 35; echo "Row Count = $rowc"
+
+## display instructions to users
+let introw=$rowc+9 
+ tput cup $introw 10; echo "Use WASD to navigate"
+let introw=$introw+1
+ tput cup $introw 10; echo "Enter \":\" to change"
+ tput cup 5 10; echo "row: $y and column: $x"
+ tput cup 6 10; echo
+
+## call function from functions to display file in temp file
+getline 7 $rowc $columnc $width
+
+ #draw grid
+ #awk 'BEGIN {FS = ";"} ; {printf "%s %5.10s %s %10.10s\n", $1, $2, $3, $4}' "$file"
+ #END draw grid
+
+## set user cursor position
+ tput cup $yl $xl
+
+## wait for user input for direction of cursor or escape character
+read -n 1 key || continue
+ case $key in
+  [w]) let y=$y-1 ; $edit $file $x $y ; clear; exit ;;
+  [s]) let y=$y+1 ; $edit $file $x $y ; clear; exit ;;
+  [a]) let x=$x-1 ; $edit $file $x $y ; clear; exit ;;
+  [d]) let x=$x+1 ; $edit $file $x $y ; clear; exit ;;
+  [:]) ;;
+  *) $edit $file $x $y ;;
+ esac
+
+## escape from directions and wait for user command
+let introw=$introw+2
+tput cup $introw 0; echo "Enter value to change"
+ echo "Enter ':s' to save"
+ echo "Enter ':q' to quit"
+ echo "Enter ':n' to return unchanged"
+ echo "Enter ':r' to add new row"
+ echo "Enter ':c' to add new column"
+ echo "Enter ':rd' to delete selected row"
+ echo "Enter ':cd' to delete selected column"
+ 
+let introw=$introw+8
+
+## read user input to change value of selected cell
+if "$key" = ":"
+then
+tput cup $introw 0; echo
+  read choice || continue
+   case $choice in
+    ':q') clear; exit ;;
+    ':s') echo saved; savefile $temp $rowc; cp $temp $file ; $edit $file $x $y; clear; exit ;;
+    ':r') ~/csvEdit/rowadd $rowc $columnc; $edit $file $x $y; clear; exit ;;
+    ':c') ~/csvEdit/columnadd $rowc; $edit $file $x $y; clear; exit ;;
+    ':n') $edit $file $x $y; clear; exit ;;
+    ':rd') ~/csvEdit/rowdelete $y $rowc; $edit $file $x $y; clear; exit ;;
+    ':cd') ~/csvEdit/columndelete $x $rowc $columnc; $edit $file $x $y; clear; exit ;;
+    :[a-Z]*) $edit $file $x $y; clear; exit ;;
+    *) ~/csvEdit/rowedit $x $y $choice; $edit $file $x $y; clear; exit ;;
+ esac
+ clear; exit
+fi
+clear; exit
+

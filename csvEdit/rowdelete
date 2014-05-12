@@ -1,0 +1,34 @@
+#!/bin/bash
+# =================================
+# Author: 	Ving Trung
+# Last Update: 	May 9, 2014
+# Filename: 	rowdelete
+# Description:  delete user specified row 
+# =================================
+# parameter rowNumber totalNumberRows
+
+## get functions from function file
+. ~/csvEdit/functions
+
+## loop through rows and save r"j" to r"i"
+i=$1
+let j=$i+1
+while test $i -lt "$2"
+ do
+  #echo "i is $i"
+  #cat $file | cut -d',' -f${i}
+  cp ~/csvEdit/temp/r"$j" ~/csvEdit/temp/r"$i"
+  #echo " ${row[${i}]} "
+  let i=$i+1
+  let j=$i+1
+done
+
+#clear r$c
+
+let row=$2-1
+
+## save to tempfile new row files
+rm ~/csvEdit/temp/tempfile
+savefile ~/csvEdit/temp/tempfile $row
+
+exit

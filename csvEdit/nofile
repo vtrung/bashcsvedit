@@ -1,0 +1,28 @@
+#!/bin/bash
+# =================================
+# Author: 	Ving Trung
+# Last Update: 	April 20, 2014
+# Filename: 	nofile
+# Description:	display message to user that no file was passed
+# =================================
+
+## loop through to display message to user and wait for commands
+loop=y
+while test $loop = "y"
+do
+ clear
+ tput cup 3 12; echo "csvEdit"
+ tput cup 4 10; echo "================"
+ tput cup 5 12; echo "Author: Ving Trung"
+ tput cup 6 12; echo "NO FILE DETECTED"
+ tput cup 8 12; echo "Please call program with csv file"
+ tput cup 9 12; echo "Example:  csvEdit example.csv"
+ tput cup 10 12; echo "Enter Q - Quit"
+ tput cup 11 10; echo "================"
+ read choice || continue
+  case $choice in
+   [Qq]) clear; exit ;;
+   *) tput cup 12 10; echo "Invalid Code"; read choice ;;
+  esac
+done
+

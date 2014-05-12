@@ -1,0 +1,39 @@
+#!/bin/bash
+# =================================
+# Author: 	Ving Trung
+# Last Update: 	May 9, 2014
+# Filename: 	rowadd
+# Description:  add row to file
+# =================================
+# param: 1-new rowcount
+
+. ~/csvEdit/functions
+
+## loop through array to enter row values NULL
+i=0
+while test $i -le "$2"
+ do
+  #echo "i is $i"
+  #cat $file | cut -d',' -f${i}
+  row[${i}]="NULL"
+  #echo " ${row[${i}]} "
+  let i=$i+1
+done
+
+## clear r$c
+## loop through array to save to string line
+line=""
+i=1
+while test $i -le "$2"
+do
+ line+=${row[${i}]}
+ line+=","
+ let i=$i+1
+done
+
+## save string line to row file
+echo $line > ~/csvEdit/temp/r"$1"
+let row=$1+1
+savefile ~/csvEdit/temp/tempfile $row
+
+exit

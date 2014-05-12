@@ -1,0 +1,50 @@
+#!/bin/bash
+# =================================
+# Author: 	Ving Trung
+# Last Update: 	May 8, 2014
+# Filename: 	rowEdit
+# Description: 	replace cell value of specified cell in csv
+# =================================
+# param: 1-rownum 2-columnnum 3-value for changing
+r=$1
+c=$2
+value=$3
+cd ~/csvEdit/temp/
+
+let unit=$r+1
+
+## get row file
+file=r$c
+rowc=$(cat $file | tr ',' ' ' | wc -w)
+
+## loop through columns in row file and cutting out each to save to array
+i=1
+while test $i -le "$rowc"
+ do
+  #echo "i is $i"
+  #cat $file | cut -d',' -f${i}
+  row[${i}]=$(cat $file | cut -d',' -f${i})
+  #echo " ${row[${i}]} "
+  let i=$i+1
+done
+
+## change the selected column for editing and replace the value with input
+row[${unit}]=$value
+#echo "unit changed is ${row[${unit}]}"
+#echo "done"
+
+#clear r$c
+# save all array variables to string var
+line=""
+i=1
+while test $i -le "$rowc"
+do
+ line+=${row[${i}]}
+ line+=","
+ let i=$i+1
+done
+
+# save string to row file
+echo $line > r$c
+
+exit
